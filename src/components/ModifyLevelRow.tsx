@@ -266,7 +266,7 @@ export default function ModifyLevelRow({
       </div>
 
       {/* Padding for modify level row */}
-      <div className="xl:col-span-10">
+      <div className="col-span-full flex w-full justify-end">
         {onCancelHandler ? (
           <Tooltip title="Cancel">
             <IconButton

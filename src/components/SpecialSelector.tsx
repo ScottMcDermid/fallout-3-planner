@@ -36,7 +36,7 @@ export default function SpecialSelector({
           {shorthandBySpecial[stat]}
         </Typography>
       </Typography>
-      <ToggleButtonGroup className="flex min-w-20 p-1">
+      <ToggleButtonGroup className="mt-1 flex min-w-20 p-1">
         <ToggleButton
           disabled={isMin}
           className="w-6 p-0 text-lg"

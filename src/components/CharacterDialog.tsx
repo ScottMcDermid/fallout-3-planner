@@ -171,13 +171,16 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
                         {shorthandBySpecial[stat]}
                       </Typography>
                     </Box>
-                    <ToggleButtonGroup value={tagSkills} sx={{ flexWrap: 'wrap', width: '100%' }}>
+                    <ToggleButtonGroup
+                      value={tagSkills}
+                      sx={{ flexWrap: 'wrap', width: '100%', justifyContent: 'flex-start' }}
+                    >
                       {skillsBySpecial[stat].map((skill) => (
                         <ToggleButton
                           key={skill}
                           value={skill}
                           onChange={() => handleToggleTagSkill(skill)}
-                          sx={{ flex: 1, py: 0.5, fontSize: '0.7rem' }}
+                          sx={{ flex: '0 0 5.5rem', width: '5.5rem', py: 0.5, fontSize: '0.7rem' }}
                         >
                           <SkillIcon skill={skill} size={12} style={{ marginRight: 3 }} />
                           {shorthandBySkill[skill]}

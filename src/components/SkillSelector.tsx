@@ -1,0 +1,95 @@
+import React from 'react';
+import Box from '@mui/material/Box';
+import { shorthandBySkill, Skill } from '@/utils/skillUtils';
+import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import SkillIcon from '@/components/SkillIcon';
+
+export default function SkillSelector({
+  skill,
+  tag,
+  base,
+  value,
+  color,
+  compact,
+  selectHandler,
+  unselectHandler,
+  incrementHandler,
+  decrementHandler,
+}: {
+  skill: Skill;
+  tag?: boolean;
+  base: number;
+  value: number;
+  color?: string;
+  compact?: boolean;
+  selectHandler: () => void;
+  unselectHandler: () => void;
+  incrementHandler: () => void;
+  decrementHandler: () => void;
+}) {
+  return (
+    <Box className="m-1 flex flex-col">
+      <Typography
+        {...(tag !== false ? { color: 'default' } : { color: 'grey' })}
+        className="whitespace-nowrap text-center text-xs"
+      >
+        <Typography
+          className={compact ? 'hidden' : 'hidden lg:inline-flex lg:items-center'}
+          component={'span'}
+        >
+          <SkillIcon skill={skill} size={14} style={{ marginRight: 4 }} />
+          {skill}
+          {tag ? '*' : ''}
+        </Typography>
+        <Typography
+          className={compact ? 'inline-flex items-center' : 'inline-flex items-center lg:hidden'}
+          component={'span'}
+        >
+          <SkillIcon skill={skill} size={14} style={{ marginRight: 4 }} className="hidden sm:inline-block" />
+          {shorthandBySkill[skill]}
+          {tag ? '*' : ''}
+        </Typography>
+      </Typography>
+      <ToggleButton
+        className={compact ? 'p-1' : 'p-1 lg:hidden'}
+        value={value}
+        selected={value !== base}
+        onClick={() => {
+          if (value === base) selectHandler();
+          else unselectHandler();
+        }}
+        aria-label={`select ${skill}`}
+      >
+        <Typography color={color || 'primary'}>{value}</Typography>
+      </ToggleButton>
+      <ToggleButtonGroup className={compact ? 'hidden' : 'hidden min-w-20 p-1 lg:flex'}>
+        <ToggleButton
+          className="w-6 p-0 text-lg"
+          value={false}
+          aria-label={`decrement ${skill}`}
+          onClick={decrementHandler}
+        >
+          -
+        </ToggleButton>
+        <ToggleButton
+          value={false}
+          onClick={() => {
+            if (value === base) selectHandler();
+            else unselectHandler();
+          }}
+          className="flex-1 p-1"
+        >
+          <Typography color={color || 'primary'}>{value}</Typography>
+        </ToggleButton>
+        <ToggleButton
+          aria-label={`increment ${skill}`}
+          value={false}
+          onClick={incrementHandler}
+          className="w-6 p-0 text-lg"
+        >
+          +
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </Box>
+  );
+}

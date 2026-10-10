@@ -30,7 +30,7 @@ export default function BuildPage() {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4 bg-[#1e1e1e] text-gray-300">
         <p className="text-lg">Invalid or corrupted build link.</p>
-        <a href="/" className="text-yellow-400 underline hover:text-yellow-200">
+        <a href="/" className="text-green-400 underline hover:text-green-200">
           Go to planner
         </a>
       </div>

@@ -187,7 +187,7 @@ export default function Planner({ sharedBuild }: PlannerProps) {
 
           {/* Shared Build Banner */}
           {isViewOnly && (
-            <div className="sticky top-0 z-20 flex w-full items-center justify-between bg-yellow-900/80 px-4 py-2 text-sm text-yellow-200 backdrop-blur-sm">
+            <div className="sticky top-0 z-20 flex w-full items-center justify-between bg-green-900/80 px-4 py-2 text-sm text-green-200 backdrop-blur-sm">
               <span>Viewing a shared build</span>
               <div className="flex gap-2">
                 <Button

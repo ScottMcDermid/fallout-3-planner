@@ -10,7 +10,7 @@
   --color-danger: #ef4444;
   --color-ghost: #9ca3af;
   --color-primary: #e5e7eb;
-  --color-secondary: #fde047;
+  --color-secondary: #4ade80;
   --color-text: #e5e7eb;
 }
 
@@ -22,7 +22,7 @@
     --color-foreground: #e5e7eb;
     --color-ghost: #9ca3af;
     --color-primary: #e5e7eb;
-    --color-secondary: #fde047;
+    --color-secondary: #4ade80;
     --color-text: #e5e7eb;
   }
 }

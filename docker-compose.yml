@@ -1,5 +1,5 @@
 services:
-  oblivion-planner:
+  fallout-3-planner:
     container_name: $CONTAINER_NAME
     build:
       context: .
@@ -13,7 +13,7 @@ services:
     profiles:
       - production
 
-  oblivion-planner-dev:
+  fallout-3-planner-dev:
     container_name: $CONTAINER_NAME
     build:
       context: .

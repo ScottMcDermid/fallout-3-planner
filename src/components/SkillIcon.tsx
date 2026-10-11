@@ -2,18 +2,18 @@ import React from 'react';
 import type { IconBaseProps } from 'react-icons';
 import type { Skill } from '@/utils/skillUtils';
 
-import { GiPistolGun, GiMachineGunMagazine, GiLockedDoor, GiExplosiveMaterials, GiFist, GiChatBubble } from 'react-icons/gi';
-import { FaWrench, FaFlask, FaUserNinja, FaBriefcaseMedical } from 'react-icons/fa';
+import { GiPistolGun, GiMissileLauncher, GiExplosiveMaterials, GiFist, GiChatBubble } from 'react-icons/gi';
+import { FaWrench, FaFlask, FaUserNinja, FaBriefcaseMedical, FaLock } from 'react-icons/fa';
 import { TbBolt } from 'react-icons/tb';
 import { LuSword } from 'react-icons/lu';
 import { MdAttachMoney } from 'react-icons/md';
 
 const iconBySkill: { [key in Skill]: React.ComponentType<IconBaseProps> } = {
   Barter: MdAttachMoney,
-  'Big Guns': GiMachineGunMagazine,
+  'Big Guns': GiMissileLauncher,
   'Energy Weapons': TbBolt,
   Explosives: GiExplosiveMaterials,
-  Lockpick: GiLockedDoor,
+  Lockpick: FaLock,
   Medicine: FaBriefcaseMedical,
   'Melee Weapons': LuSword,
   Repair: FaWrench,

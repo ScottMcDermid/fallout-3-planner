@@ -13,6 +13,7 @@ import specialStats, { shorthandBySpecial, skillsBySpecial } from '@/utils/speci
 import { getPerkDisplayName } from '@/utils/perkUtils';
 import SkillIcon from '@/components/SkillIcon';
 import PerkIcon from '@/components/PerkIcon';
+import BobbleheadIcon from '@/components/BobbleheadIcon';
 import { Panel, PanelHeader } from '@/components/Panel';
 
 interface CharacterSummaryProps {
@@ -21,6 +22,7 @@ interface CharacterSummaryProps {
   special: SpecialSet;
   tagSkills: Skill[];
   perksTaken: string[];
+  bobbleheadsFound?: string[];
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -38,6 +40,7 @@ export default function CharacterSummary({
   special,
   tagSkills,
   perksTaken,
+  bobbleheadsFound = [],
 }: CharacterSummaryProps) {
   return (
     <div>
@@ -89,11 +92,11 @@ export default function CharacterSummary({
       </Panel>
 
       {/* Perks panel */}
-      {perksTaken.length > 0 && (
-        <Panel>
-          <PanelHeader label="Perks" />
-          <Box sx={{ p: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-            {perksTaken.map((perk, i) => (
+      <Panel>
+        <PanelHeader label="Perks" />
+        <Box sx={{ p: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+          {perksTaken.length > 0 ? (
+            perksTaken.map((perk, i) => (
               <Chip
                 key={`${perk}-${i}`}
                 icon={<PerkIcon perk={perk} size={14} />}
@@ -101,10 +104,36 @@ export default function CharacterSummary({
                 size="small"
                 variant="outlined"
               />
-            ))}
-          </Box>
-        </Panel>
-      )}
+            ))
+          ) : (
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+              No perks
+            </Typography>
+          )}
+        </Box>
+      </Panel>
+
+      {/* Bobbleheads panel */}
+      <Panel>
+        <PanelHeader label="Bobbleheads" />
+        <Box sx={{ p: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+          {bobbleheadsFound.length > 0 ? (
+            bobbleheadsFound.map((bobblehead, i) => (
+              <Chip
+                key={`${bobblehead}-${i}`}
+                icon={<BobbleheadIcon bobblehead={bobblehead} size={14} />}
+                label={bobblehead}
+                size="small"
+                variant="outlined"
+              />
+            ))
+          ) : (
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+              No bobbleheads
+            </Typography>
+          )}
+        </Box>
+      </Panel>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { IconBaseProps, IconType } from 'react-icons';
 
 import {
   GiLovers,
+  GiBilledCap,
   GiFamilyHouse,
   GiRevolver,
   GiBaseballBat,
@@ -23,6 +24,7 @@ import {
   GiRadioactive,
   GiAmmoBox,
   GiWeight,
+  GiMissileLauncher,
   GiScales,
   GiPawPrint,
   GiCrosshair,
@@ -60,7 +62,7 @@ import {
 
 const iconByPerk: Record<string, IconType> = {
   'Black Widow / Lady Killer': GiLovers,
-  "Daddy's Boy / Daddy's Girl": GiFamilyHouse,
+  "Daddy's Boy / Daddy's Girl": GiBilledCap,
   'Gun Nut': GiRevolver,
   'Little Leaguer': GiBaseballBat,
   Thief: GiLockpicks,
@@ -81,7 +83,7 @@ const iconByPerk: Record<string, IconType> = {
   Commando: GiMachineGunMagazine,
   'Rad Resistance': GiRadioactive,
   Scrounger: GiAmmoBox,
-  'Size Matters': GiWeight,
+  'Size Matters': GiMissileLauncher,
   'Strong Back': GiWeight,
   'Impartial Mediation': GiScales,
   'Animal Friend': GiPawPrint,

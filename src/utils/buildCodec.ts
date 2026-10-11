@@ -2,8 +2,8 @@
  * Build Codec — encodes/decodes the full character build state into a compact,
  * URL-safe string using binary packing + lz-string compression.
  *
- * Encoding format (v3):
- *   Byte 0: version (3)
+ * Encoding format (v5):
+ *   Byte 0: version (5)
  *   Then bit-packed fields:
  *     - character name: 8-bit length + UTF-8 bytes
  *     - gender: 1 bit (index into genders array)
@@ -14,6 +14,7 @@
  *     - perk: 6 bits (index into PERKS_LIST, 58 perks + "none" sentinel)
  *     - specialIncrease: 3 bits (index into specialStats array, sentinel 7 = none)
  *     - tagSkill: 4 bits (index into skills array, sentinel 15 = none)
+ *     - bobbleheads: 5-bit count + 5 bits per index into BOBBLEHEADS_LIST
  */
 
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
@@ -22,15 +23,18 @@ import genders, { type Gender } from '@/utils/genderUtils';
 import specialStats, { type SpecialSet, type SpecialStat, getSpecialSetTemplate } from '@/utils/specialUtils';
 import skills, { getSkillsSetTemplate, type Skill, type SkillsSet } from '@/utils/skillUtils';
 import perks from '@/utils/perkUtils';
+import bobbleheads from '@/utils/bobbleheadUtils';
 import type { LevelUp } from '@/utils/levelUtils';
 
 // Canonical ordering for perks indexing
 const PERKS_LIST: string[] = perks.map((perk) => perk.name);
+const BOBBLEHEADS_LIST: string[] = bobbleheads.map((bobblehead) => bobblehead.name);
 const NO_PERK_INDEX = 63; // sentinel (6 bits max value)
 const NO_SPECIAL_INDEX = 7; // sentinel (3 bits)
 const NO_SKILL_INDEX = 15; // sentinel (4 bits)
+const MAX_BOBBLEHEADS_PER_LEVEL = 19; // fits in 5 bits, and there are only 19 bobbleheads total
 
-const CODEC_VERSION = 3;
+const CODEC_VERSION = 5;
 
 // ─── Bit Writer / Reader ────────────────────────────────────────────────────
 
@@ -147,6 +151,16 @@ export function encodeBuild(data: BuildData): string {
     // Tag skill: 4 bits
     const tagSkillIndex = levelUp.tagSkill ? skills.indexOf(levelUp.tagSkill) : -1;
     writer.writeBits(tagSkillIndex >= 0 ? tagSkillIndex : NO_SKILL_INDEX, 4);
+
+    // Bobbleheads: 5-bit count + 5 bits per bobblehead index
+    const bobbleheadIndexes = (levelUp.bobbleheads ?? [])
+      .map((name) => BOBBLEHEADS_LIST.indexOf(name))
+      .filter((idx) => idx >= 0)
+      .slice(0, MAX_BOBBLEHEADS_PER_LEVEL);
+    writer.writeBits(bobbleheadIndexes.length, 5);
+    for (const idx of bobbleheadIndexes) {
+      writer.writeBits(idx, 5);
+    }
   }
 
   // Convert to binary string and compress
@@ -171,7 +185,7 @@ export function decodeBuild(code: string): BuildData | null {
 
     // Version
     const version = reader.readBits(8);
-    if (version !== 3) return null;
+    if (version !== 4 && version !== 5) return null;
 
     // Character name: 8-bit length + UTF-8 bytes
     const nameLen = reader.readBits(8);
@@ -218,7 +232,19 @@ export function decodeBuild(code: string): BuildData | null {
       const tagSkillIndex = reader.readBits(4);
       const tagSkill: Skill | undefined = tagSkillIndex < skills.length ? skills[tagSkillIndex] : undefined;
 
-      levelUps.push({ skillPoints, perk, specialIncrease, tagSkill });
+      const bobbleheads: string[] = [];
+      if (version === 5) {
+        const bobbleheadCount = reader.readBits(5);
+        for (let j = 0; j < bobbleheadCount; j++) {
+          const idx = reader.readBits(5);
+          if (idx < BOBBLEHEADS_LIST.length) bobbleheads.push(BOBBLEHEADS_LIST[idx]);
+        }
+      } else {
+        const bobbleheadIndex = reader.readBits(5);
+        if (bobbleheadIndex < BOBBLEHEADS_LIST.length) bobbleheads.push(BOBBLEHEADS_LIST[bobbleheadIndex]);
+      }
+
+      levelUps.push({ skillPoints, perk, specialIncrease, tagSkill, bobbleheads });
     }
 
     return {

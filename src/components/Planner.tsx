@@ -219,13 +219,14 @@ export default function Planner({ sharedBuild }: PlannerProps) {
                 special={sharedBuild!.special}
                 tagSkills={sharedBuild!.tagSkills}
                 perksTaken={levels.length > 0 ? levels[levels.length - 1].perksTaken : []}
+                bobbleheadsFound={levels.length > 0 ? levels[levels.length - 1].bobbleheadsFound : []}
               />
             </div>
           )}
 
           {/* Table Header */}
           <div
-            className="sticky top-0 z-10 grid w-full max-w-8xl grid-cols-[3rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] place-items-center bg-inherit shadow-lg sm:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] xl:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
+            className="sticky top-0 z-10 grid w-full max-w-8xl grid-cols-[3rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] place-items-center bg-[#1e1e1e] shadow-lg sm:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] xl:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
             style={{ gridAutoRows: 'minmax(3rem, auto)' }}
           >
             <div className="sm:text-lg">
@@ -266,6 +267,7 @@ export default function Planner({ sharedBuild }: PlannerProps) {
                   <LevelRow
                     key={level.level}
                     level={level}
+                    striped={i % 2 === 1}
                     {...(!isViewOnly && level.level > 1
                       ? {
                           onRemoveHandler: () => promptConfirmRemoveLevel(level.level),
@@ -346,6 +348,7 @@ export default function Planner({ sharedBuild }: PlannerProps) {
                   special={sharedBuild!.special}
                   tagSkills={sharedBuild!.tagSkills}
                   perksTaken={levels.length > 0 ? levels[levels.length - 1].perksTaken : []}
+                  bobbleheadsFound={levels.length > 0 ? levels[levels.length - 1].bobbleheadsFound : []}
                 />
               </div>
             </Drawer>

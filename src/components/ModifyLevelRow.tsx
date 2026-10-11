@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, Button, IconButton, LinearProgress, Tooltip, Typography } from '@mui/material';
+import { Box, Button, IconButton, LinearProgress, TextField, Tooltip, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 import type { Level, LevelUp } from '@/utils/levelUtils';
@@ -10,6 +10,7 @@ import SkillSelector from '@/components/SkillSelector';
 import SkillFineTuner from '@/components/SkillFineTuner';
 import LevelRow from '@/components/LevelRow';
 import PerkIcon from '@/components/PerkIcon';
+import BobbleheadIcon from '@/components/BobbleheadIcon';
 
 import { useCharacterStore } from '@/data/characterStore';
 
@@ -17,6 +18,7 @@ import specialStats, { MAX_SPECIAL_LEVEL, skillsBySpecial, specialIcons } from '
 import type { SpecialStat } from '@/utils/specialUtils';
 import skills, { MAX_SKILL_LEVEL, type Skill, type SkillsSet, getSkillsSetTemplate, sumSkillSet } from '@/utils/skillUtils';
 import perks, { INTENSE_TRAINING, TAG_PERK, getPerkDisplayName, type Perk } from '@/utils/perkUtils';
+import bobbleheads, { hasTakenBobblehead } from '@/utils/bobbleheadUtils';
 
 function meetsRequirements(level: Level, perk: Perk): boolean {
   const { special: specialReqs, skills: skillReqs } = perk.requirements ?? {};
@@ -55,10 +57,13 @@ export default function ModifyLevelRow({
   );
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [selectedPerk, setSelectedPerk] = useState<string | null>(levelUp?.perk ?? null);
+  const [selectedBobbleheads, setSelectedBobbleheads] = useState<string[]>(levelUp?.bobbleheads ?? []);
   const [specialIncrease, setSpecialIncrease] = useState<SpecialStat | undefined>(
     levelUp?.specialIncrease,
   );
   const [newTagSkill, setNewTagSkill] = useState<Skill | undefined>(levelUp?.tagSkill);
+  const [perkSearch, setPerkSearch] = useState('');
+  const [bobbleheadSearch, setBobbleheadSearch] = useState('');
 
   const pointsAvailable = useMemo(
     () => getSkillPointsForLevel(level.special.Intelligence, hasEducatedPerk(level.perksTaken)),
@@ -80,6 +85,37 @@ export default function ModifyLevelRow({
       ),
     [level],
   );
+
+  const filteredPerks = useMemo(() => {
+    const query = perkSearch.trim().toLowerCase();
+    if (!query) return availablePerks;
+    return availablePerks.filter(
+      (perk) =>
+        getPerkDisplayName(perk.name, gender).toLowerCase().includes(query) ||
+        perk.description.toLowerCase().includes(query),
+    );
+  }, [availablePerks, perkSearch, gender]);
+
+  const availableBobbleheads = useMemo(
+    () => bobbleheads.filter((bobblehead) => !hasTakenBobblehead(level.bobbleheadsFound, bobblehead.name)),
+    [level],
+  );
+
+  const filteredBobbleheads = useMemo(() => {
+    const query = bobbleheadSearch.trim().toLowerCase();
+    if (!query) return availableBobbleheads;
+    return availableBobbleheads.filter(
+      (bobblehead) =>
+        bobblehead.name.toLowerCase().includes(query) ||
+        bobblehead.description.toLowerCase().includes(query),
+    );
+  }, [availableBobbleheads, bobbleheadSearch]);
+
+  const toggleBobblehead = (name: string) => {
+    setSelectedBobbleheads((current) =>
+      current.includes(name) ? current.filter((b) => b !== name) : [...current, name],
+    );
+  };
 
   const handleSkillSelected = (skill: Skill) => {
     setSkillUps({
@@ -110,8 +146,9 @@ export default function ModifyLevelRow({
       perk: selectedPerk,
       specialIncrease,
       tagSkill: newTagSkill,
+      bobbleheads: selectedBobbleheads,
     }),
-    [skillUps, selectedPerk, specialIncrease, newTagSkill],
+    [skillUps, selectedPerk, specialIncrease, newTagSkill, selectedBobbleheads],
   );
 
   const baseSkills = useMemo(() => sumSkillSet(level.skills, getSkillsSetTemplate()), [level]);
@@ -142,6 +179,9 @@ export default function ModifyLevelRow({
     setSelectedPerk(null);
     setSpecialIncrease(undefined);
     setNewTagSkill(undefined);
+    setSelectedBobbleheads([]);
+    setPerkSearch('');
+    setBobbleheadSearch('');
   };
 
   return (
@@ -193,82 +233,154 @@ export default function ModifyLevelRow({
         )}
       </div>
 
-      {/* Perk picker */}
-      <div className="col-span-full w-full px-2 py-2">
-        <Typography variant="caption" className="block pb-1 text-gray-400">
-          Choose a perk (required)
-        </Typography>
-        <div className="rounded-lg border border-white/10 bg-black/20 p-1.5 shadow-inner">
-          <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-1.5 overflow-y-auto pr-1">
-            {availablePerks.map((perk) => (
-              <Button
-                key={perk.name}
-                variant={selectedPerk === perk.name ? 'contained' : 'outlined'}
-                size="small"
-                className="h-full flex-col items-start justify-start gap-0.5 whitespace-normal rounded-md px-2 py-1.5 text-left normal-case"
-                onClick={() => {
-                  setSelectedPerk(perk.name);
-                  if (perk.name !== INTENSE_TRAINING) setSpecialIncrease(undefined);
-                  if (perk.name !== TAG_PERK) setNewTagSkill(undefined);
-                }}
-              >
-                <span className="flex items-center gap-1 text-xs leading-tight font-bold">
-                  <PerkIcon perk={perk.name} size={14} />
-                  {getPerkDisplayName(perk.name, gender)}
-                </span>
-                <span className="text-left text-[11px] leading-snug normal-case opacity-80">{perk.description}</span>
-              </Button>
-            ))}
+      {/* Perk & Bobblehead pickers — side by side when there's room, stacked otherwise */}
+      <div className="col-span-full flex w-full flex-wrap gap-2 px-2 py-2">
+        <div className="min-w-[16rem] flex-[2]">
+          <Typography variant="caption" className="block pb-1 text-gray-400">
+            Choose a perk (required)
+          </Typography>
+          <TextField
+            value={perkSearch}
+            onChange={(e) => setPerkSearch(e.target.value)}
+            placeholder="Search perks…"
+            variant="outlined"
+            size="small"
+            fullWidth
+            className="pb-1.5"
+            slotProps={{ input: { className: 'text-xs' } }}
+          />
+          <div className="rounded-lg border border-white/10 bg-black/20 p-1.5 shadow-inner">
+            {filteredPerks.length > 0 ? (
+              <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-1.5 overflow-y-auto pr-1">
+                {filteredPerks.map((perk) => {
+                  const nextRank = countPerkRanksTaken(level.perksTaken, perk.name) + 1;
+                  return (
+                    <Button
+                      key={perk.name}
+                      variant={selectedPerk === perk.name ? 'contained' : 'outlined'}
+                      size="small"
+                      className="h-full flex-col items-start justify-start gap-0.5 whitespace-normal rounded-md px-2 py-1.5 text-left normal-case"
+                      onClick={() => {
+                        setSelectedPerk(perk.name);
+                        if (perk.name !== INTENSE_TRAINING) setSpecialIncrease(undefined);
+                        if (perk.name !== TAG_PERK) setNewTagSkill(undefined);
+                      }}
+                    >
+                      <span className="flex items-center gap-1 text-xs leading-tight font-bold">
+                        <PerkIcon perk={perk.name} size={14} />
+                        {getPerkDisplayName(perk.name, gender)}
+                        {perk.ranks > 1 && (
+                          <span className="font-normal opacity-70">
+                            ({nextRank}/{perk.ranks})
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-left text-[11px] leading-snug normal-case opacity-80">{perk.description}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Typography variant="caption" className="block p-2 text-center text-gray-500 italic">
+                No perks match your search
+              </Typography>
+            )}
           </div>
+
+          {selectedPerk === INTENSE_TRAINING && (
+            <div className="pt-2">
+              <Typography variant="caption" className="block pb-1 text-gray-400">
+                Choose a S.P.E.C.I.A.L. stat to increase
+              </Typography>
+              <div className="flex flex-wrap gap-1">
+                {specialStats.map((stat) => {
+                  const Icon = specialIcons[stat];
+                  const disabled = level.special[stat] >= MAX_SPECIAL_LEVEL;
+                  return (
+                    <Button
+                      key={stat}
+                      size="small"
+                      disabled={disabled}
+                      variant={specialIncrease === stat ? 'contained' : 'outlined'}
+                      onClick={() => setSpecialIncrease(stat)}
+                    >
+                      <Icon size={14} style={{ marginRight: 4 }} />
+                      {stat}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {selectedPerk === TAG_PERK && (
+            <div className="pt-2">
+              <Typography variant="caption" className="block pb-1 text-gray-400">
+                Choose a fourth tag skill
+              </Typography>
+              <div className="flex flex-wrap gap-1">
+                {skills
+                  .filter((skill) => !tagSkills.includes(skill))
+                  .map((skill) => (
+                    <Button
+                      key={skill}
+                      size="small"
+                      variant={newTagSkill === skill ? 'contained' : 'outlined'}
+                      onClick={() => setNewTagSkill(skill)}
+                    >
+                      {skill}
+                    </Button>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {selectedPerk === INTENSE_TRAINING && (
-          <div className="pt-2">
-            <Typography variant="caption" className="block pb-1 text-gray-400">
-              Choose a S.P.E.C.I.A.L. stat to increase
-            </Typography>
-            <div className="flex flex-wrap gap-1">
-              {specialStats.map((stat) => {
-                const Icon = specialIcons[stat];
-                const disabled = level.special[stat] >= MAX_SPECIAL_LEVEL;
-                return (
-                  <Button
-                    key={stat}
-                    size="small"
-                    disabled={disabled}
-                    variant={specialIncrease === stat ? 'contained' : 'outlined'}
-                    onClick={() => setSpecialIncrease(stat)}
-                  >
-                    <Icon size={14} style={{ marginRight: 4 }} />
-                    {stat}
-                  </Button>
-                );
-              })}
-            </div>
+        <div className="min-w-[16rem] flex-1">
+          <Typography variant="caption" className="block pb-1 text-gray-400">
+            Found a bobblehead? (optional, select any number)
+          </Typography>
+          <TextField
+            value={bobbleheadSearch}
+            onChange={(e) => setBobbleheadSearch(e.target.value)}
+            placeholder="Search bobbleheads…"
+            variant="outlined"
+            size="small"
+            fullWidth
+            className="pb-1.5"
+            slotProps={{ input: { className: 'text-xs' } }}
+          />
+          <div className="rounded-lg border border-white/10 bg-black/20 p-1.5 shadow-inner">
+            {filteredBobbleheads.length > 0 ? (
+              <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-1.5 overflow-y-auto pr-1">
+                {filteredBobbleheads.map((bobblehead) => {
+                  const selected = selectedBobbleheads.includes(bobblehead.name);
+                  return (
+                    <Button
+                      key={bobblehead.name}
+                      variant={selected ? 'contained' : 'outlined'}
+                      size="small"
+                      className="h-full flex-col items-start justify-start gap-0.5 whitespace-normal rounded-md px-2 py-1.5 text-left normal-case"
+                      onClick={() => toggleBobblehead(bobblehead.name)}
+                    >
+                      <span className="flex items-center gap-1 text-xs leading-tight font-bold">
+                        <BobbleheadIcon bobblehead={bobblehead.name} size={14} />
+                        {bobblehead.name}
+                      </span>
+                      <span className="text-left text-[11px] leading-snug normal-case opacity-80">
+                        {selected ? 'Click to remove' : bobblehead.description}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Typography variant="caption" className="block p-2 text-center text-gray-500 italic">
+                {availableBobbleheads.length > 0 ? 'No bobbleheads match your search' : 'No bobbleheads remaining'}
+              </Typography>
+            )}
           </div>
-        )}
-
-        {selectedPerk === TAG_PERK && (
-          <div className="pt-2">
-            <Typography variant="caption" className="block pb-1 text-gray-400">
-              Choose a fourth tag skill
-            </Typography>
-            <div className="flex flex-wrap gap-1">
-              {skills
-                .filter((skill) => !tagSkills.includes(skill))
-                .map((skill) => (
-                  <Button
-                    key={skill}
-                    size="small"
-                    variant={newTagSkill === skill ? 'contained' : 'outlined'}
-                    onClick={() => setNewTagSkill(skill)}
-                  >
-                    {skill}
-                  </Button>
-                ))}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Padding for modify level row */}
@@ -309,7 +421,16 @@ export default function ModifyLevelRow({
         </Button>
         <div className="w-full py-2 text-center text-xs text-ghost">
           {pointsSpent}/{pointsAvailable} skill points spent
-          {selectedPerk ? ` · Perk: ${getPerkDisplayName(selectedPerk, gender)}` : ' · No perk selected'}
+          {selectedPerk
+            ? ` · Perk: ${getPerkDisplayName(selectedPerk, gender)}${
+                (perks.find((p) => p.name === selectedPerk)?.ranks ?? 1) > 1
+                  ? ` (${countPerkRanksTaken(level.perksTaken, selectedPerk) + 1}/${
+                      perks.find((p) => p.name === selectedPerk)?.ranks
+                    })`
+                  : ''
+              }`
+            : ' · No perk selected'}
+          {selectedBobbleheads.length > 0 ? ` · Bobbleheads: ${selectedBobbleheads.join(', ')}` : ''}
         </div>
       </div>
     </>

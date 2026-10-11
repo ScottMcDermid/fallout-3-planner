@@ -18,6 +18,7 @@ import skills, {
   TAG_SKILL_BONUS,
 } from '@/utils/skillUtils';
 import { EDUCATED_PERK, perks } from '@/utils/perkUtils';
+import { BOBBLEHEAD_SKILL_BONUS, BOBBLEHEAD_SPECIAL_BONUS, bobbleheads } from '@/utils/bobbleheadUtils';
 
 export type Level = {
   level: number;
@@ -27,6 +28,7 @@ export type Level = {
   actionPoints: number;
   carryWeight: number;
   perksTaken: string[];
+  bobbleheadsFound: string[];
 };
 
 // Describes what changed going from one level to the next.
@@ -35,6 +37,7 @@ export type LevelUp = {
   perk: string | null;
   specialIncrease?: SpecialStat; // used by Intense Training
   tagSkill?: Skill; // used by Tag!
+  bobbleheads?: string[];
 };
 
 export const levelTemplate: Level = {
@@ -45,6 +48,7 @@ export const levelTemplate: Level = {
   actionPoints: 0,
   carryWeight: 0,
   perksTaken: [],
+  bobbleheadsFound: [],
 };
 
 export const levelUpTemplate: LevelUp = {
@@ -73,15 +77,22 @@ export const getBaseLevel = (special: SpecialSet, tagSkills: Skill[]): Level => 
     actionPoints: getActionPoints(special.Agility),
     carryWeight: getCarryWeight(special.Strength),
     perksTaken: [],
+    bobbleheadsFound: [],
   };
 };
 
 export const applyLevelUpToLevel = (level: Level, levelUp: LevelUp): Level => {
+  const foundBobbleheads = (levelUp.bobbleheads ?? [])
+    .map((name) => bobbleheads.find((bobblehead) => bobblehead.name === name))
+    .filter((bobblehead): bobblehead is (typeof bobbleheads)[number] => !!bobblehead);
+
   const newSpecial: SpecialSet = specialStats.reduce((newSpecial, stat) => {
     const increase = levelUp.specialIncrease === stat ? 1 : 0;
+    const bobbleheadBonus =
+      foundBobbleheads.filter((bobblehead) => bobblehead.special === stat).length * BOBBLEHEAD_SPECIAL_BONUS;
     return {
       ...newSpecial,
-      [stat]: Math.min(MAX_SPECIAL_LEVEL, level.special[stat] + increase),
+      [stat]: Math.min(MAX_SPECIAL_LEVEL, level.special[stat] + increase + bobbleheadBonus),
     };
   }, getSpecialSetTemplate());
 
@@ -90,11 +101,13 @@ export const applyLevelUpToLevel = (level: Level, levelUp: LevelUp): Level => {
   const newSkills: SkillsSet = skills.reduce((newSkills, skill) => {
     const tagBonus = levelUp.tagSkill === skill ? TAG_SKILL_BONUS : 0;
     const perkBonus = perkSkillBonus?.[skill] ?? 0;
+    const bobbleheadBonus =
+      foundBobbleheads.filter((bobblehead) => bobblehead.skill === skill).length * BOBBLEHEAD_SKILL_BONUS;
     return {
       ...newSkills,
       [skill]: Math.min(
         MAX_SKILL_LEVEL,
-        level.skills[skill] + (levelUp.skillPoints[skill] ?? 0) + tagBonus + perkBonus,
+        level.skills[skill] + (levelUp.skillPoints[skill] ?? 0) + tagBonus + perkBonus + bobbleheadBonus,
       ),
     };
   }, getSkillsSetTemplate());
@@ -109,6 +122,10 @@ export const applyLevelUpToLevel = (level: Level, levelUp: LevelUp): Level => {
     actionPoints: getActionPoints(newSpecial.Agility),
     carryWeight: getCarryWeight(newSpecial.Strength),
     perksTaken: levelUp.perk ? [...level.perksTaken, levelUp.perk] : level.perksTaken,
+    bobbleheadsFound:
+      levelUp.bobbleheads && levelUp.bobbleheads.length > 0
+        ? [...level.bobbleheadsFound, ...levelUp.bobbleheads]
+        : level.bobbleheadsFound,
   };
 };
 

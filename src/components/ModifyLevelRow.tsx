@@ -9,6 +9,7 @@ import { applyLevelUpToLevel, getSkillPointsForLevel, hasEducatedPerk, countPerk
 import SkillSelector from '@/components/SkillSelector';
 import SkillFineTuner from '@/components/SkillFineTuner';
 import LevelRow from '@/components/LevelRow';
+import PerkIcon from '@/components/PerkIcon';
 
 import { useCharacterStore } from '@/data/characterStore';
 
@@ -197,21 +198,24 @@ export default function ModifyLevelRow({
         <Typography variant="caption" className="block pb-1 text-gray-400">
           Choose a perk (required)
         </Typography>
-        <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
+        <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-1.5 overflow-y-auto pr-1">
           {availablePerks.map((perk) => (
             <Button
               key={perk.name}
               variant={selectedPerk === perk.name ? 'contained' : 'outlined'}
               size="small"
-              className="flex-col items-start normal-case"
+              className="h-full flex-col items-start justify-start gap-0.5 whitespace-normal rounded-md px-2 py-1.5 text-left normal-case"
               onClick={() => {
                 setSelectedPerk(perk.name);
                 if (perk.name !== INTENSE_TRAINING) setSpecialIncrease(undefined);
                 if (perk.name !== TAG_PERK) setNewTagSkill(undefined);
               }}
             >
-              <span className="text-xs font-bold">{getPerkDisplayName(perk.name, gender)}</span>
-              <span className="text-left text-xs normal-case opacity-80">{perk.description}</span>
+              <span className="flex items-center gap-1 text-xs leading-tight font-bold">
+                <PerkIcon perk={perk.name} size={14} />
+                {getPerkDisplayName(perk.name, gender)}
+              </span>
+              <span className="text-left text-[11px] leading-snug normal-case opacity-80">{perk.description}</span>
             </Button>
           ))}
         </div>

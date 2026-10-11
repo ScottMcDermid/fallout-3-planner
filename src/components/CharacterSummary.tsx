@@ -12,6 +12,7 @@ import type { SpecialSet } from '@/utils/specialUtils';
 import specialStats, { shorthandBySpecial, skillsBySpecial } from '@/utils/specialUtils';
 import { getPerkDisplayName } from '@/utils/perkUtils';
 import SkillIcon from '@/components/SkillIcon';
+import PerkIcon from '@/components/PerkIcon';
 import { Panel, PanelHeader } from '@/components/Panel';
 
 interface CharacterSummaryProps {
@@ -93,7 +94,13 @@ export default function CharacterSummary({
           <PanelHeader label="Perks" />
           <Box sx={{ p: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
             {perksTaken.map((perk, i) => (
-              <Chip key={`${perk}-${i}`} label={getPerkDisplayName(perk, gender)} size="small" variant="outlined" />
+              <Chip
+                key={`${perk}-${i}`}
+                icon={<PerkIcon perk={perk} size={14} />}
+                label={getPerkDisplayName(perk, gender)}
+                size="small"
+                variant="outlined"
+              />
             ))}
           </Box>
         </Panel>

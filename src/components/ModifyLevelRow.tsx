@@ -20,19 +20,25 @@ import skills, { MAX_SKILL_LEVEL, type Skill, type SkillsSet, getSkillsSetTempla
 import perks, { INTENSE_TRAINING, TAG_PERK, getPerkDisplayName, type Perk } from '@/utils/perkUtils';
 import bobbleheads, { hasTakenBobblehead } from '@/utils/bobbleheadUtils';
 
-function meetsRequirements(level: Level, perk: Perk): boolean {
+function getUnmetRequirements(level: Level, perk: Perk): string[] {
   const { special: specialReqs, skills: skillReqs } = perk.requirements ?? {};
+  const unmet: string[] = [];
+  if (perk.level > level.level + 1) {
+    unmet.push(`Level ${perk.level}`);
+  }
   if (specialReqs) {
     for (const [stat, min] of Object.entries(specialReqs)) {
-      if (level.special[stat as SpecialStat] < (min ?? 0)) return false;
+      const have = level.special[stat as SpecialStat];
+      if (have < (min ?? 0)) unmet.push(`${stat} ${min} (have ${have})`);
     }
   }
   if (skillReqs) {
     for (const [skill, min] of Object.entries(skillReqs)) {
-      if (level.skills[skill as Skill] < (min ?? 0)) return false;
+      const have = level.skills[skill as Skill];
+      if (have < (min ?? 0)) unmet.push(`${skill} ${min} (have ${have})`);
     }
   }
-  return true;
+  return unmet;
 }
 
 export default function ModifyLevelRow({
@@ -76,13 +82,7 @@ export default function ModifyLevelRow({
   );
 
   const availablePerks = useMemo(
-    () =>
-      perks.filter(
-        (perk) =>
-          perk.level <= level.level + 1 &&
-          countPerkRanksTaken(level.perksTaken, perk.name) < perk.ranks &&
-          meetsRequirements(level, perk),
-      ),
+    () => perks.filter((perk) => countPerkRanksTaken(level.perksTaken, perk.name) < perk.ranks),
     [level],
   );
 
@@ -254,11 +254,14 @@ export default function ModifyLevelRow({
               <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-1.5 overflow-y-auto pr-1">
                 {filteredPerks.map((perk) => {
                   const nextRank = countPerkRanksTaken(level.perksTaken, perk.name) + 1;
-                  return (
+                  const unmetRequirements = getUnmetRequirements(level, perk);
+                  const locked = unmetRequirements.length > 0;
+                  const button = (
                     <Button
                       key={perk.name}
                       variant={selectedPerk === perk.name ? 'contained' : 'outlined'}
                       size="small"
+                      disabled={locked}
                       className="h-full flex-col items-start justify-start gap-0.5 whitespace-normal rounded-md px-2 py-1.5 text-left normal-case"
                       onClick={() => {
                         setSelectedPerk(perk.name);
@@ -276,7 +279,19 @@ export default function ModifyLevelRow({
                         )}
                       </span>
                       <span className="text-left text-[11px] leading-snug normal-case opacity-80">{perk.description}</span>
+                      {locked && (
+                        <span className="text-left text-[11px] leading-snug normal-case text-amber-400/90">
+                          Requires {unmetRequirements.join(', ')}
+                        </span>
+                      )}
                     </Button>
+                  );
+                  return locked ? (
+                    <Tooltip key={perk.name} title={`Requires ${unmetRequirements.join(', ')}`} arrow>
+                      <span className="h-full">{button}</span>
+                    </Tooltip>
+                  ) : (
+                    button
                   );
                 })}
               </div>

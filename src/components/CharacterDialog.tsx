@@ -158,7 +158,7 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             Choose {NUM_TAG_SKILLS} tag skills (each gets +15)
           </Typography>
-          <div className="grid grid-cols-[3.5rem_1fr] place-items-center gap-y-0.5">
+          <div className="grid grid-cols-[3.5rem_1fr] place-items-center gap-x-2 gap-y-0.5">
             {specialStats.map(
               (stat) =>
                 skillsBySpecial[stat].length > 0 && (

@@ -26,9 +26,8 @@ export default function LevelRow({
   onModifyHandler?: () => void;
 }) {
   const { gender } = useCharacterStore();
-  const rowClassName = `w-full h-full self-stretch justify-self-stretch flex items-center justify-center px-0 ${
-    striped ? 'bg-white/[0.03]' : ''
-  }`;
+  const stripeClassName = striped ? 'bg-emerald-400/[0.05]' : '';
+  const cellClassName = 'w-full h-full min-h-12 flex items-center justify-center px-0';
   const perkTakenThisLevel = previousLevel
     ? level.perksTaken[level.perksTaken.length - 1]
     : undefined;
@@ -38,31 +37,18 @@ export default function LevelRow({
     ? level.bobbleheadsFound.slice(previousLevel.bobbleheadsFound.length)
     : [];
 
+  const hasPerksOrBobbleheads =
+    (tookPerkThisLevel && perkTakenThisLevel) || bobbleheadsFoundThisLevel.length > 0;
+
   return (
-    <>
-      <div className={`${rowClassName} flex-col gap-0.5 text-lg`}>
+    <div
+      className={`col-span-full grid w-full grid-cols-[3rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] place-items-center sm:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] xl:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] ${stripeClassName}`}
+    >
+      <div className={`${cellClassName} text-lg`}>
         <span>{level.level}</span>
-        {(tookPerkThisLevel && perkTakenThisLevel) || bobbleheadsFoundThisLevel.length > 0 ? (
-          <span className="flex items-center justify-center gap-1 text-white/40">
-            {tookPerkThisLevel && perkTakenThisLevel ? (
-              <Tooltip title={`Perk: ${getPerkDisplayName(perkTakenThisLevel, gender)}`}>
-                <span className="inline-flex">
-                  <PerkIcon perk={perkTakenThisLevel} size="0.75rem" />
-                </span>
-              </Tooltip>
-            ) : null}
-            {bobbleheadsFoundThisLevel.map((bobblehead) => (
-              <Tooltip key={bobblehead} title={`Bobblehead: ${bobblehead}`}>
-                <span className="inline-flex">
-                  <BobbleheadIcon bobblehead={bobblehead} size="0.75rem" />
-                </span>
-              </Tooltip>
-            ))}
-          </span>
-        ) : null}
       </div>
       {specialStats.map((stat: SpecialStat) => (
-        <div key={stat} className={rowClassName}>
+        <div key={stat} className={cellClassName}>
           <Typography
             {...(previousLevel && level.special[stat] > previousLevel.special[stat]
               ? { color: 'secondary' }
@@ -72,7 +58,7 @@ export default function LevelRow({
           </Typography>
         </div>
       ))}
-      <div className={`${rowClassName} hidden xl:flex`}>
+      <div className={`${cellClassName} hidden xl:flex`}>
         <Typography
           {...(previousLevel && level.hitPoints > previousLevel.hitPoints
             ? { color: 'secondary' }
@@ -81,7 +67,7 @@ export default function LevelRow({
           {level.hitPoints}
         </Typography>
       </div>
-      <div className={`${rowClassName} hidden xl:flex`}>
+      <div className={`${cellClassName} hidden xl:flex`}>
         <Typography
           {...(previousLevel && level.actionPoints > previousLevel.actionPoints
             ? { color: 'secondary' }
@@ -90,7 +76,7 @@ export default function LevelRow({
           {level.actionPoints}
         </Typography>
       </div>
-      <div className={`${rowClassName} hidden xl:flex`}>
+      <div className={`${cellClassName} hidden xl:flex`}>
         <Typography
           {...(previousLevel && level.carryWeight > previousLevel.carryWeight
             ? { color: 'secondary' }
@@ -99,7 +85,7 @@ export default function LevelRow({
           {level.carryWeight}
         </Typography>
       </div>
-      <div className={rowClassName}>
+      <div className={cellClassName}>
         {onModifyHandler ? (
           <Tooltip title="Modify">
             <IconButton
@@ -131,6 +117,24 @@ export default function LevelRow({
           <div></div>
         )}
       </div>
-    </>
+      {hasPerksOrBobbleheads ? (
+        <div className="col-span-full flex w-full flex-wrap items-center justify-start gap-1 px-2 pb-1.5 text-white/40">
+          {tookPerkThisLevel && perkTakenThisLevel ? (
+            <Tooltip title={`Perk: ${getPerkDisplayName(perkTakenThisLevel, gender)}`}>
+              <span className="inline-flex">
+                <PerkIcon perk={perkTakenThisLevel} size="0.75rem" />
+              </span>
+            </Tooltip>
+          ) : null}
+          {bobbleheadsFoundThisLevel.map((bobblehead) => (
+            <Tooltip key={bobblehead} title={`Bobblehead: ${bobblehead}`}>
+              <span className="inline-flex">
+                <BobbleheadIcon bobblehead={bobblehead} size="0.75rem" />
+              </span>
+            </Tooltip>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }

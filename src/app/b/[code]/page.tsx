@@ -28,7 +28,7 @@ export default function BuildPage() {
 
   if (failed) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-[#1e1e1e] text-gray-300">
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-[#1a1e1b] text-gray-300">
         <p className="text-lg">Invalid or corrupted build link.</p>
         <a href="/" className="text-green-400 underline hover:text-green-200">
           Go to planner
@@ -39,7 +39,7 @@ export default function BuildPage() {
 
   if (!sharedBuild) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#1e1e1e]">
+      <div className="flex h-screen items-center justify-center bg-[#1a1e1b]">
         <p className="text-lg text-gray-400">Loading build...</p>
       </div>
     );

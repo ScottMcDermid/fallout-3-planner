@@ -226,7 +226,7 @@ export default function Planner({ sharedBuild }: PlannerProps) {
 
           {/* Table Header */}
           <div
-            className="sticky top-0 z-10 grid w-full max-w-8xl grid-cols-[3rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] place-items-center bg-[#1e1e1e] shadow-lg sm:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] xl:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
+            className="sticky top-0 z-10 grid w-full max-w-8xl grid-cols-[3rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] place-items-center bg-[#1a1e1b] shadow-lg sm:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] xl:grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
             style={{ gridAutoRows: 'minmax(3rem, auto)' }}
           >
             <div className="sm:text-lg">
@@ -355,7 +355,7 @@ export default function Planner({ sharedBuild }: PlannerProps) {
           )}
           </Box>
 
-          <footer className="w-full border-t border-gray-700 bg-neutral-900 px-6 py-8 text-sm text-gray-400">
+          <footer className="w-full border-t border-gray-700 bg-[#171b18] px-6 py-8 text-sm text-gray-400">
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 text-center sm:text-left">
             <div className="space-y-2">
               <p>Fallout 3 Tool Suite © 2025 Scott McDermid</p>

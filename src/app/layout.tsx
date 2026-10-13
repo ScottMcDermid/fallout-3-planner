@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
   },
-  themeColor: '#1e1e1e',
+  themeColor: '#1a1e1b',
   robots: {
     index: true,
     follow: true,

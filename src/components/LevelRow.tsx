@@ -121,10 +121,14 @@ export default function LevelRow({
         <div className="col-span-full flex w-full flex-wrap items-center justify-start gap-1 px-2 pb-1.5 text-white/40">
           {tookPerkThisLevel && perkTakenThisLevel ? (
             <Tooltip title={`Perk: ${getPerkDisplayName(perkTakenThisLevel, gender)}`}>
-              <span className="inline-flex">
+              <span className="inline-flex items-center gap-1">
                 <PerkIcon perk={perkTakenThisLevel} size="0.75rem" />
+                <span className="text-xs">{getPerkDisplayName(perkTakenThisLevel, gender)}</span>
               </span>
             </Tooltip>
+          ) : null}
+          {tookPerkThisLevel && perkTakenThisLevel && bobbleheadsFoundThisLevel.length > 0 ? (
+            <span className="text-xs text-white/20">·</span>
           ) : null}
           {bobbleheadsFoundThisLevel.map((bobblehead) => (
             <Tooltip key={bobblehead} title={`Bobblehead: ${bobblehead}`}>

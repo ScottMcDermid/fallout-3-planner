@@ -58,6 +58,20 @@ import {
   GiNinjaHeroicStance,
   GiScythe,
   GiCompass,
+  GiNightSleep,
+  GiSittingDog,
+  GiSodaCan,
+  GiDevilMask,
+  GiEscalator,
+  GiYinYang,
+  GiMuscleUp,
+  GiStopwatch,
+  GiBiohazard,
+  GiAnvil,
+  GiBeerStein,
+  GiAtomicSlashes,
+  GiStarFormation,
+  GiNuclearBomb,
 } from 'react-icons/gi';
 
 const iconByPerk: Record<string, IconType> = {
@@ -119,6 +133,20 @@ const iconByPerk: Record<string, IconType> = {
   Ninja: GiNinjaHeroicStance,
   "Grim Reaper's Sprint": GiScythe,
   Explorer: GiCompass,
+  'Deep Sleep': GiNightSleep,
+  'Puppies!': GiSittingDog,
+  'Quantum Chemist': GiSodaCan,
+  "Devil's Highway": GiDevilMask,
+  'Escalator to Heaven': GiEscalator,
+  'Karmic Rebalance': GiYinYang,
+  'No Weaknesses': GiMuscleUp,
+  'Nerves of Steel': GiStopwatch,
+  'Rad Tolerance': GiBiohazard,
+  Warmonger: GiAnvil,
+  'Party Boy / Party Girl': GiBeerStein,
+  'Rad Absorption': GiAtomicSlashes,
+  'Almost Perfect': GiStarFormation,
+  'Nuclear Anomaly': GiNuclearBomb,
 };
 
 export default function PerkIcon({ perk, style, ...props }: { perk: string } & IconBaseProps) {

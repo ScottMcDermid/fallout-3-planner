@@ -410,7 +410,8 @@ export const perks: Perk[] = [
     level: 20,
     ranks: 1,
     requirements: { skills: { 'Melee Weapons': 80, Sneak: 80 } },
-    description: '+15% critical chance with Melee/Unarmed; +25% damage with sneak attack criticals.',
+    description:
+      '+15% critical chance with Melee/Unarmed; +25% damage with sneak attack criticals.',
   },
   {
     name: "Grim Reaper's Sprint",
@@ -424,6 +425,98 @@ export const perks: Perk[] = [
     ranks: 1,
     description: 'Every location in the world is revealed on your map.',
   },
+  // Broken Steel (DLC) raises the level cap to 30 and adds the following perks.
+  {
+    name: 'Deep Sleep',
+    level: 22,
+    ranks: 1,
+    description: 'Get the Well Rested XP bonus for 8 hours no matter what bed you sleep in.',
+  },
+  {
+    name: 'Puppies!',
+    level: 22,
+    ranks: 1,
+    description: 'If Dogmeat dies, a replacement puppy will be waiting for you outside Vault 101.',
+  },
+  {
+    name: 'Quantum Chemist',
+    level: 22,
+    ranks: 1,
+    requirements: { skills: { Science: 70 } },
+    description:
+      'Every 10 Nuka-Cola you carry are automatically converted into a Nuka-Cola Quantum.',
+  },
+  {
+    name: "Devil's Highway",
+    level: 24,
+    ranks: 1,
+    description: 'Instantly set your Karma to Very Evil. Requires Karma above Very Evil.',
+  },
+  {
+    name: 'Escalator to Heaven',
+    level: 24,
+    ranks: 1,
+    description: 'Instantly set your Karma to Very Good. Requires Karma below Very Good.',
+  },
+  {
+    name: 'Karmic Rebalance',
+    level: 24,
+    ranks: 1,
+    description: 'Instantly set your Karma to Neutral. Requires non-Neutral Karma.',
+  },
+  {
+    name: 'No Weaknesses',
+    level: 24,
+    ranks: 1,
+    description: 'Any S.P.E.C.I.A.L. stat below 5 is instantly raised to 5.',
+  },
+  {
+    name: 'Nerves of Steel',
+    level: 26,
+    ranks: 1,
+    requirements: { special: { Agility: 7 } },
+    description: 'Action Points regenerate much more quickly.',
+  },
+  {
+    name: 'Rad Tolerance',
+    level: 26,
+    ranks: 1,
+    requirements: { special: { Endurance: 7 } },
+    description: 'No longer suffer any ill effects from Minor Radiation Poisoning.',
+  },
+  {
+    name: 'Warmonger',
+    level: 26,
+    ranks: 1,
+    requirements: { special: { Intelligence: 7 } },
+    description: 'Build every custom weapon type without needing to find its schematics first.',
+  },
+  {
+    name: 'Party Boy / Party Girl',
+    level: 28,
+    ranks: 1,
+    description: 'No longer suffer the withdrawal effects of Alcohol Addiction.',
+  },
+  {
+    name: 'Rad Absorption',
+    level: 28,
+    ranks: 1,
+    requirements: { special: { Endurance: 7 } },
+    description: 'Your radiation level slowly decreases on its own over time.',
+  },
+  {
+    name: 'Almost Perfect',
+    level: 30,
+    ranks: 1,
+    description: 'All S.P.E.C.I.A.L. stats are instantly raised to 9.',
+  },
+  {
+    name: 'Nuclear Anomaly',
+    level: 30,
+    ranks: 1,
+    description:
+      'Erupt into a devastating nuclear explosion whenever your Health drops to 20 or less (nearby allies suffer the blast too).',
+  },
 ];
 
 // A handful of perks have a gendered display name (the internal/canonical
@@ -432,6 +525,7 @@ const genderedPerkNames: Record<string, Record<Gender, string>> = {
   'Black Widow / Lady Killer': { Female: 'Black Widow', Male: 'Lady Killer' },
   "Daddy's Boy / Daddy's Girl": { Female: "Daddy's Girl", Male: "Daddy's Boy" },
   'Action Boy / Action Girl': { Female: 'Action Girl', Male: 'Action Boy' },
+  'Party Boy / Party Girl': { Female: 'Party Girl', Male: 'Party Boy' },
 };
 
 export const getPerkDisplayName = (name: string, gender: Gender): string =>

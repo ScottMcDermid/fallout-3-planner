@@ -250,7 +250,7 @@ export default function ModifyLevelRow({
       <div className="col-span-full flex w-full flex-wrap gap-2 px-2 py-2">
         <div className="min-w-[16rem] flex-[2]">
           <Typography variant="subtitle2" className="block pb-1 font-bold tracking-wide text-gray-100 uppercase">
-            Choose a perk (required)
+            Choose a perk <span className="text-[11px] font-normal tracking-normal text-gray-500 normal-case">(required)</span>
           </Typography>
           <TextField
             value={perkSearch}
@@ -366,7 +366,10 @@ export default function ModifyLevelRow({
 
         <div className="min-w-[16rem] flex-1">
           <Typography variant="subtitle2" className="block pb-1 font-bold tracking-wide text-gray-100 uppercase">
-            Found a bobblehead? (optional, select any number)
+            Found a bobblehead?{' '}
+            <span className="text-[11px] font-normal tracking-normal text-gray-500 normal-case">
+              (optional, select any number)
+            </span>
           </Typography>
           <TextField
             value={bobbleheadSearch}

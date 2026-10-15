@@ -153,6 +153,14 @@ export default function ModifyLevelRow({
 
   const baseSkills = useMemo(() => sumSkillSet(level.skills, getSkillsSetTemplate()), [level]);
 
+  // Split all skills into two even rows, spread across the width rather than
+  // crammed into a single line.
+  const skillRows = useMemo(() => {
+    const allSkills = specialStats.flatMap((stat) => skillsBySpecial[stat]);
+    const half = Math.ceil(allSkills.length / 2);
+    return [allSkills.slice(0, half), allSkills.slice(half)];
+  }, []);
+
   useEffect(() => {
     onLevelUpChange?.(currentLevelUp);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -188,33 +196,38 @@ export default function ModifyLevelRow({
     <>
       {/* padding for level column */}
       <div></div>
-      {specialStats.map(
-        (stat) =>
-          skillsBySpecial[stat].length > 0 && (
-            <div key={stat}>
-              {skillsBySpecial[stat].map((skill) => (
-                <Box key={`${level.level}-${skill}`} className={compact ? 'w-full sm:w-16' : 'w-full sm:w-16 lg:w-[6.5rem]'}>
-                  <SkillSelector
-                    skill={skill}
-                    compact={compact}
-                    color={skillUps[skill] > 0 ? 'secondary' : ''}
-                    base={baseSkills[skill]}
-                    value={level.skills[skill] + skillUps[skill]}
-                    tag={tagSkills.includes(skill)}
-                    selectHandler={() => handleSkillSelected(skill)}
-                    unselectHandler={() => handleSkillUnselected(skill)}
-                    incrementHandler={() => handleSkillIncremented(skill)}
-                    decrementHandler={() => handleSkillDecremented(skill)}
-                  />
-                </Box>
-              ))}
-            </div>
-          ),
-      )}
+      {/* padding for special stat columns — skills are listed side by side below instead */}
+      {specialStats.map((stat) => (
+        <div key={stat}></div>
+      ))}
       {/* padding for derived stat columns on xl */}
       <div className="hidden xl:block"></div>
       <div className="hidden xl:block"></div>
       <div className="hidden xl:block"></div>
+
+      {/* Skill selectors — side by side rather than grouped under their S.P.E.C.I.A.L. stat */}
+      <div className="col-span-full flex w-full flex-col gap-5 px-2 py-4">
+        {skillRows.map((row, i) => (
+          <div key={i} className="flex w-full flex-wrap items-start justify-center gap-x-6 gap-y-4">
+            {row.map((skill) => (
+              <Box key={`${level.level}-${skill}`} className={compact ? 'w-full sm:w-16' : 'w-full sm:w-16 lg:w-36'}>
+                <SkillSelector
+                  skill={skill}
+                  compact={compact}
+                  color={skillUps[skill] > 0 ? 'secondary' : ''}
+                  base={baseSkills[skill]}
+                  value={level.skills[skill] + skillUps[skill]}
+                  tag={tagSkills.includes(skill)}
+                  selectHandler={() => handleSkillSelected(skill)}
+                  unselectHandler={() => handleSkillUnselected(skill)}
+                  incrementHandler={() => handleSkillIncremented(skill)}
+                  decrementHandler={() => handleSkillDecremented(skill)}
+                />
+              </Box>
+            ))}
+          </div>
+        ))}
+      </div>
 
       <div className="col-span-full w-full justify-start">
         {selectedSkill && (
@@ -236,7 +249,7 @@ export default function ModifyLevelRow({
       {/* Perk & Bobblehead pickers — side by side when there's room, stacked otherwise */}
       <div className="col-span-full flex w-full flex-wrap gap-2 px-2 py-2">
         <div className="min-w-[16rem] flex-[2]">
-          <Typography variant="caption" className="block pb-1 text-gray-400">
+          <Typography variant="subtitle2" className="block pb-1 font-bold tracking-wide text-gray-100 uppercase">
             Choose a perk (required)
           </Typography>
           <TextField
@@ -352,7 +365,7 @@ export default function ModifyLevelRow({
         </div>
 
         <div className="min-w-[16rem] flex-1">
-          <Typography variant="caption" className="block pb-1 text-gray-400">
+          <Typography variant="subtitle2" className="block pb-1 font-bold tracking-wide text-gray-100 uppercase">
             Found a bobblehead? (optional, select any number)
           </Typography>
           <TextField

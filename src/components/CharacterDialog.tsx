@@ -55,12 +55,7 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
     [special],
   );
 
-  const specialError = useMemo(() => {
-    if (specialPointsAllocated !== EXTRA_SPECIAL_POINTS) {
-      return `Distribute exactly ${EXTRA_SPECIAL_POINTS} extra S.P.E.C.I.A.L. points`;
-    }
-    return '';
-  }, [specialPointsAllocated]);
+  const specialPointsRemaining = EXTRA_SPECIAL_POINTS - specialPointsAllocated;
 
   const tagSkillsError = useMemo(() => {
     if (tagSkills.length !== NUM_TAG_SKILLS) {
@@ -128,8 +123,13 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
       <Panel>
         <PanelHeader label="S.P.E.C.I.A.L." />
         <Box sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Distribute {EXTRA_SPECIAL_POINTS} extra points among your S.P.E.C.I.A.L. stats
+          <Typography
+            variant="caption"
+            sx={{ color: specialPointsRemaining > 0 ? 'error.main' : 'text.secondary' }}
+          >
+            {specialPointsRemaining > 0
+              ? `Distribute ${specialPointsRemaining} more point${specialPointsRemaining === 1 ? '' : 's'} among your S.P.E.C.I.A.L. stats`
+              : 'All extra S.P.E.C.I.A.L. points distributed'}
           </Typography>
           <div className="grid grid-cols-1 gap-y-1 sm:grid-cols-2">
             {specialStats.map((stat) => (
@@ -143,11 +143,6 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
               />
             ))}
           </div>
-          <Box sx={{ minHeight: '1.25rem' }}>
-            <Typography variant="caption" sx={{ color: 'error.main', fontSize: '0.7rem' }}>
-              {specialError}
-            </Typography>
-          </Box>
         </Box>
       </Panel>
 

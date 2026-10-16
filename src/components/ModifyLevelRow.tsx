@@ -207,6 +207,21 @@ export default function ModifyLevelRow({
 
       {/* Skill selectors — side by side rather than grouped under their S.P.E.C.I.A.L. stat */}
       <div className="col-span-full flex w-full flex-col gap-5 px-2 py-4">
+        <Typography
+          variant="caption"
+          className="text-center"
+          sx={{ color: pointsSpent === pointsAvailable ? 'text.secondary' : 'error.main' }}
+        >
+          {pointsSpent < pointsAvailable
+            ? `Spend ${pointsAvailable - pointsSpent} more skill point${
+                pointsAvailable - pointsSpent === 1 ? '' : 's'
+              } (${pointsSpent}/${pointsAvailable})`
+            : pointsSpent > pointsAvailable
+              ? `${pointsSpent - pointsAvailable} skill point${
+                  pointsSpent - pointsAvailable === 1 ? '' : 's'
+                } over the limit (${pointsSpent}/${pointsAvailable})`
+              : `All ${pointsAvailable} skill points spent`}
+        </Typography>
         {skillRows.map((row, i) => (
           <div key={i} className="flex w-full flex-wrap items-start justify-center gap-x-6 gap-y-4">
             {row.map((skill) => (

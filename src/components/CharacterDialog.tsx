@@ -57,12 +57,7 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
 
   const specialPointsRemaining = EXTRA_SPECIAL_POINTS - specialPointsAllocated;
 
-  const tagSkillsError = useMemo(() => {
-    if (tagSkills.length !== NUM_TAG_SKILLS) {
-      return `Choose exactly ${NUM_TAG_SKILLS} tag skills`;
-    }
-    return '';
-  }, [tagSkills]);
+  const tagSkillsRemaining = NUM_TAG_SKILLS - tagSkills.length;
 
   const handleIncrementSpecial = (stat: SpecialStat) => {
     setCharacterData({ special: { ...special, [stat]: special[stat] + 1 } });
@@ -150,8 +145,13 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
       <Panel>
         <PanelHeader label="Tag Skills" />
         <Box sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Choose {NUM_TAG_SKILLS} tag skills (each gets +15)
+          <Typography
+            variant="caption"
+            sx={{ color: tagSkillsRemaining > 0 ? 'error.main' : 'text.secondary' }}
+          >
+            {tagSkillsRemaining > 0
+              ? `Choose ${tagSkillsRemaining} more tag skill${tagSkillsRemaining === 1 ? '' : 's'} (each gets +15)`
+              : 'All tag skills chosen'}
           </Typography>
           <div className="grid grid-cols-[3.5rem_1fr] place-items-center gap-x-2 gap-y-0.5">
             {specialStats.map(
@@ -174,6 +174,7 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
                         <ToggleButton
                           key={skill}
                           value={skill}
+                          disabled={tagSkillsRemaining <= 0 && !tagSkills.includes(skill)}
                           onChange={() => handleToggleTagSkill(skill)}
                           sx={{ flex: '0 0 5.5rem', width: '5.5rem', py: 0.5, fontSize: '0.7rem' }}
                         >
@@ -186,11 +187,6 @@ function CharacterContent({ onClose, isDrawer }: { onClose?: () => void; isDrawe
                 ),
             )}
           </div>
-          <Box sx={{ minHeight: '1.25rem' }}>
-            <Typography variant="caption" sx={{ color: 'error.main', fontSize: '0.7rem' }}>
-              {tagSkillsError}
-            </Typography>
-          </Box>
         </Box>
       </Panel>
     </>
